@@ -77,7 +77,7 @@ Platform : Chrome Extension
 <img width="600" height="600" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/62f1d592-6c01-4bac-a841-9fee81321d16" />
 
 # 📸 Demo
-<img width="413" height="450" alt="Untitled design (1)" src="https://github.com/user-attachments/assets/4c1d5642-7101-4835-8abf-862a8275bfed" />
+<img width="413" height="600" alt="Untitled design (1)" src="https://github.com/user-attachments/assets/4c1d5642-7101-4835-8abf-862a8275bfed" />
 
 <img width="602" height="614" alt="image" src="https://github.com/user-attachments/assets/b64e637d-7bcf-4a28-bd68-eb410f1786d8" />
 
