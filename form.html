@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Gmail Assistant – Setup</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0f0f13;
+      color: #e8e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: #1a1a24;
+      border: 1px solid #2a2a38;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .card-header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+    .card-header p  { font-size: 12px; color: #777; margin-top: 3px; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #e74c3c;
+      margin-bottom: 12px;
+      margin-top: 24px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #2a2a38;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: #0f0f13;
+      border: 1px solid #2a2a38;
+      border-radius: 8px;
+      color: #e8e8f0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 2px rgba(231,76,60,0.15);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+    }
+
+    select option { background: #1a1a24; color: #e8e8f0; }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: #555;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* ── Submit button ── */
+    #submitBtn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 13px;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #submitBtn:hover:not(:disabled) {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    #submitBtn:active:not(:disabled) { transform: translateY(0); }
+
+    #submitBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── Spinner inside button ── */
+    #spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;         /* shown by JS when loading */
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Status message ── */
+    #statusMsg {
+      margin-top: 14px;
+      font-size: 12px;
+      text-align: center;
+      min-height: 20px;
+      line-height: 1.5;
+      color: #4caf50;       /* default = success green */
+      transition: color 0.2s;
+    }
+
+    #statusMsg.error { color: #e74c3c; }
+    #statusMsg.info  { color: #888; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="card-header">
+      <div class="logo">✉</div>
+      <div>
+        <h1>Smart Gmail Assistant</h1>
+        <p>Tell us about yourself to personalise your inbox highlighting</p>
+      </div>
+    </div>
+
+    <!-- ✅ NOTE: NO action="" attribute on <form> — prevents any page navigation -->
+    <form id="userForm" autocomplete="off">
+
+      <!-- Personal Info -->
+      <div class="section-label">Personal Info</div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" placeholder="e.g. Rahul Sharma" required />
+        </div>
+        <div class="field">
+          <label for="age">Age</label>
+          <input type="number" id="age" placeholder="22" min="10" max="99" />
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender">
+            <option value="">Prefer not to say</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="profession">Profession</label>
+          <select id="profession">
+            <option value="Student">Student</option>
+            <option value="Software Developer">Software Developer</option>
+            <option value="Artist">Artist</option>
+            <option value="Entrepreneur">Entrepreneur</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Email Preferences -->
+      <div class="section-label">Email Preferences</div>
+
+      <div class="field">
+        <label for="importantSenders">Important senders or domains</label>
+        <!-- ✅ ID must exactly match what form.js reads: "importantSenders" -->
+        <input type="text" id="importantSenders"
+          placeholder="e.g. professor@college.edu, @bank.com, hr@company.com" />
+        <div class="hint">Comma-separated. Use @domain.com to match all emails from that domain.</div>
+      </div>
+
+      <div class="field">
+        <label for="message">Describe what emails matter most to you *</label>
+        <textarea id="message"
+          placeholder="e.g. Exam date changes, internship deadlines, job offers from tech companies, payment reminders, project feedback from my manager…"></textarea>
+        <div class="hint">The more detail you give, the better the AI tailors your highlighting rules.</div>
+      </div>
+
+      <!-- Submit -->
+      <!-- ✅ type="submit" triggers the form's submit event which has e.preventDefault() -->
+      <button type="submit" id="submitBtn">
+        <div id="spinner"></div>
+        <span id="btnText">✨ Generate My Highlighting Rules</span>
+      </button>
+
+    </form>
+
+    <div id="statusMsg"></div>
+
+  </div>
+
+  <!-- ✅ Script at bottom of body, AFTER the DOM elements it references -->
+  <script src="form.js"></script>
+
+</body>
+</html>
