@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Gmail Assistant</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      width: 300px;
+      background: #f8f9fa;
+      color: #1a1a1a;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-icon { font-size: 28px; }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 11px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* ── Content ── */
+    .content { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .card-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    /* ── Account box ── */
+    .account-box {
+      background: linear-gradient(135deg, #f0f3ff, #f9faff);
+      border: 1.5px solid #667eea;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+
+    .account-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #667eea;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    #chromeEmail {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      word-break: break-all;
+    }
+
+    /* ── Info notice ── */
+    .notice {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 8px;
+      padding: 11px 13px;
+      font-size: 12px;
+      color: #5f4500;
+      line-height: 1.6;
+    }
+
+    .notice strong { color: #e65100; }
+
+    /* ── Steps list ── */
+    .steps { display: flex; flex-direction: column; gap: 8px; }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .step-num {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Button ── */
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    #setupBtn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #setupBtn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 14px rgba(102,126,234,0.35); }
+    #setupBtn:active { transform: translateY(0); }
+    #setupBtn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    #resetBtn {
+      background: white;
+      color: #e74c3c;
+      border: 1.5px solid #f5c6cb;
+      font-size: 12px;
+      padding: 10px;
+    }
+
+    #resetBtn:hover { background: #fff5f5; border-color: #e74c3c; }
+
+    /* ── API key input ── */
+    .key-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    #groqKeyInput {
+      flex: 1;
+      padding: 9px 11px;
+      border: 1.5px solid #dee2e6;
+      border-radius: 7px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #333;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
+
+    #groqKeyInput:focus { border-color: #667eea; }
+    #groqKeyInput::placeholder { color: #bbb; font-family: sans-serif; }
+
+    #saveKeyBtn {
+      width: auto;
+      padding: 9px 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 12px;
+      border-radius: 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    #saveKeyBtn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .key-status {
+      font-size: 11px;
+      margin-top: 6px;
+      min-height: 14px;
+    }
+
+    .key-status.saved  { color: #2e7d32; }
+    .key-status.error  { color: #c62828; }
+
+    .key-link {
+      font-size: 11px;
+      color: #667eea;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .key-link:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    .footer {
+      font-size: 11px;
+      color: #aaa;
+      text-align: center;
+      padding: 10px 16px 14px;
+      border-top: 1px solid #e9ecef;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-icon">📧</span>
+    <div>
+      <h1>Smart Gmail Assistant</h1>
+      <p>AI-powered email highlighting</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Chrome account display -->
+    <div class="card">
+      <div class="card-title">Active Google Account</div>
+      <div class="account-box">
+        <div class="account-label">Filters will apply to</div>
+        <div id="chromeEmail">Detecting…</div>
+      </div>
+
+      <!-- How it works notice -->
+      <div class="notice">
+        ⚠️ <strong>Important:</strong> This extension highlights the Gmail account
+        you are <strong>signed into Chrome</strong> with. To use a different account,
+        switch your Chrome profile first.
+      </div>
+    </div>
+
+    <!-- How to use -->
+    <div class="card">
+      <div class="card-title">How It Works</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <span>Sign into Chrome with the Google account whose Gmail you want highlighted.</span>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <span>Click <strong>"Go to Setup"</strong> and tell the AI what emails matter to you.</span>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <span>Your inbox opens automatically with 🔴 HIGH, 🟡 MEDIUM, 🟢 LOW highlights applied.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Groq API Key -->
+    <div class="card">
+      <div class="card-title">🤖 Groq AI — API Key</div>
+      <div style="font-size: 12px; color: #555; line-height: 1.6; margin-bottom: 4px;">
+        Required to generate your highlighting rules. Free, no credit card needed.
+      </div>
+      <a class="key-link" href="https://console.groq.com/keys" target="_blank">
+        → Get your free Groq API key here
+      </a>
+      <div class="key-row">
+        <input type="password" id="groqKeyInput" placeholder="Paste your Groq API key…" autocomplete="off" />
+        <button id="saveKeyBtn">Save</button>
+      </div>
+      <div class="key-status" id="keyStatus"></div>
+    </div>
+
+    <!-- Actions -->
+    <button id="setupBtn">✨ Go to Setup</button>
+    <button id="resetBtn">🗑 Reset Rules</button>
+
+  </div>
+
+  <div class="footer">Your data stays on your device • Privacy first</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

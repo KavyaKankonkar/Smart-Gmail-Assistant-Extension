@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Gmail Assistant",
+  "version": "1.0.0",
+  "permissions": [
+    "identity",
+    "identity.email",
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "icons":{
+    "128":"logo.png"
+  },
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://www.googleapis.com/*",
+    "https://calendar.google.com/*"
+  ],
+  "oauth2": {
+    "client_id": "90087913904-0709bl1pa23udqr69nvtd235teg60jf3.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_width": 380,
+    "default_height": "auto"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
